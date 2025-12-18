@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 основных паттернов JavaScript</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #f1f1f1;
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0 30px;
+            background: rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a5b4fc;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .pattern-card {
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(76, 201, 240, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pattern-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(76, 201, 240, 0.3);
+        }
+        
+        .pattern-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .pattern-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4361ee, #4cc9f0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .pattern-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .pattern-body {
+            padding: 20px;
+            flex-grow: 1;
+        }
+        
+        .pattern-description {
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .pattern-code {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-left: 4px solid #4361ee;
+        }
+        
+        .pattern-actions {
+            padding: 15px 20px 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #4361ee, #4cc9f0);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .example-output {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #10b981;
+            display: none;
+        }
+        
+        .example-output.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .highlight {
+            color: #4cc9f0;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .patterns-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>5 основных паттернов JavaScript</h1>
+            <p class="subtitle">Паттерны проектирования - это проверенные решения распространенных проблем в разработке программного обеспечения. Изучите основные паттерны JavaScript с примерами реализации.</p>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="patterns-grid">
+            <!-- Модуль -->
+            <div class="pattern-card" id="module-pattern">
+                <div class="pattern-header">
+                    <div class="pattern-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div class="pattern-title">Модуль (Module)</div>
+                </div>
+                <div class="pattern-body">
+                    <p class="pattern-description">Инкапсулирует логику в самодостаточные модули, скрывая внутренние детали реализации и предоставляя публичный API. Помогает организовать код и избегать загрязнения глобального пространства имен.</p>
+                    <pre class="pattern-code"><code>// Модуль с помощью замыкания
+const CounterModule = (function() {
+  let count = 0;
+  
+  const increment = () => {
+    count++;
+    return count;
+  };
+  
+  const decrement = () => {
+    count--;
+    return count;
+  };
+  
+  const getCount = () => count;
+  
+  // Публичный API
+  return {
+    increment,
+    decrement,
+    getCount
+  };
+})();</code></pre>
+                    <div class="example-output" id="module-output"></div>
+                </div>
+                <div class="pattern-actions">
+                    <button class="btn btn-primary" onclick="runModuleExample()">
+                        <i class="fas fa-play"></i> Запустить пример
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleCode('module-pattern')">
+                        <i class="fas fa-code"></i> Код
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Singleton -->
+            <div class="pattern-card" id="singleton-pattern">
+                <div class="pattern-header">
+                    <div class="pattern-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="pattern-title">Одиночка (Singleton)</div>
+                </div>
+                <div class="pattern-body">
+                    <p class="pattern-description">Гарантирует, что класс имеет только один экземпляр и предоставляет глобальную точку доступа к нему. Используется для управления общими ресурсами, такими как подключения к базе данных или настройки приложения.</p>
+                    <pre class="pattern-code"><code>// Singleton с помощью замыкания
+const ConfigManager = (function() {
+  let instance = null;
+  let config = {};
+  
+  function createInstance() {
+    return {
+      set: (key, value) => {
+        config[key] = value;
+      },
+      get: (key) => config[key],
+      getAll: () => ({...config})
+    };
+  }
+  
+  return {
+    getInstance: function() {
+      if (!instance) {
+        instance = createInstance();
+      }
+      return instance;
+    }
+  };
+})();</code></pre>
+                    <div class="example-output" id="singleton-output"></div>
+                </div>
+                <div class="pattern-actions">
+                    <button class="btn btn-primary" onclick="runSingletonExample()">
+                        <i class="fas fa-play"></i> Запустить пример
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleCode('singleton-pattern')">
+                        <i class="fas fa-code"></i> Код
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Фабрика -->
+            <div class="pattern-card" id="factory-pattern">
+                <div class="pattern-header">
+                    <div class="pattern-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <div class="pattern-title">Фабрика (Factory)</div>
+                </div>
+                <div class="pattern-body">
+                    <p class="pattern-description">Создает объекты без указания конкретного класса создаваемого объекта. Фабричный метод определяет интерфейс для создания объекта, но позволяет подклассам изменять тип создаваемых объектов.</p>
+                    <pre class="pattern-code"><code>// Фабрика для создания разных типов пользователей
+class UserFactory {
+  createUser(type, name) {
+    switch(type) {
+      case 'admin':
+        return new Admin(name);
+      case 'moderator':
+        return new Moderator(name);
+      case 'member':
+        return new Member(name);
+      default:
+        throw new Error('Неизвестный тип пользователя');
+    }
+  }
+}
+
+class Admin {
+  constructor(name) {
+    this.name = name;
+    this.role = 'Администратор';
+    this.permissions = ['read', 'write', 'delete', 'manage'];
+  }
+}</code></pre>
+                    <div class="example-output" id="factory-output"></div>
+                </div>
+                <div class="pattern-actions">
+                    <button class="btn btn-primary" onclick="runFactoryExample()">
+                        <i class="fas fa-play"></i> Запустить пример
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleCode('factory-pattern')">
+                        <i class="fas fa-code"></i> Код
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Наблюдатель -->
+            <div class="pattern-card" id="observer-pattern">
+                <div class="pattern-header">
+                    <div class="pattern-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="pattern-title">Наблюдатель (Observer)</div>
+                </div>
+                <div class="pattern-body">
+                    <p class="pattern-description">Определяет зависимость "один-ко-многим" между объектами так, что при изменении состояния одного объекта все зависящие от него объекты уведомляются и обновляются автоматически.</p>
+                    <pre class="pattern-code"><code>// Простая реализация паттерна Наблюдатель
+class Observable {
+  constructor() {
+    this.observers = [];
+  }
+  
+  subscribe(observer) {
+    this.observers.push(observer);
+  }
+  
+  unsubscribe(observer) {
+    this.observers = this.observers.filter(obs => obs !== observer);
+  }
+  
+  notify(data) {
+    this.observers.forEach(observer => observer.update(data));
+  }
+}
+
+class Observer {
+  update(data) {
+    console.log(`Получены данные: ${data}`);
+  }
+}</code></pre>
+                    <div class="example-output" id="observer-output"></div>
+                </div>
+                <div class="pattern-actions">
+                    <button class="btn btn-primary" onclick="runObserverExample()">
+                        <i class="fas fa-play"></i> Запустить пример
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleCode('observer-pattern')">
+                        <i class="fas fa-code"></i> Код
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Стратегия -->
+            <div class="pattern-card" id="strategy-pattern">
+                <div class="pattern-header">
+                    <div class="pattern-icon">
+                        <i class="fas fa-chess-board"></i>
+                    </div>
+                    <div class="pattern-title">Стратегия (Strategy)</div>
+                </div>
+                <div class="pattern-body">
+                    <p class="pattern-description">Определяет семейство алгоритмов, инкапсулирует каждый из них и делает их взаимозаменяемыми. Позволяет изменять алгоритмы независимо от клиентов, которые их используют.</p>
+                    <pre class="pattern-code"><code>// Стратегии для различных способов оплаты
+class PaymentContext {
+  constructor(strategy) {
+    this.strategy = strategy;
+  }
+  
+  setStrategy(strategy) {
+    this.strategy = strategy;
+  }
+  
+  executePayment(amount) {
+    return this.strategy.pay(amount);
+  }
+}
+
+class CreditCardPayment {
+  pay(amount) {
+    return `Оплачено ${amount}₽ с помощью кредитной карты`;
+  }
+}
+
+class PayPalPayment {
+  pay(amount) {
+    return `Оплачено ${amount}₽ через PayPal`;
+  }
+}</code></pre>
+                    <div class="example-output" id="strategy-output"></div>
+                </div>
+                <div class="pattern-actions">
+                    <button class="btn btn-primary" onclick="runStrategyExample()">
+                        <i class="fas fa-play"></i> Запустить пример
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleCode('strategy-pattern')">
+                        <i class="fas fa-code"></i> Код
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="summary">
+            <h2 style="margin-bottom: 20px; color: #4cc9f0; text-align: center;">Почему паттерны важны?</h2>
+            <div style="background: rgba(30, 30, 46, 0.9); border-radius: 15px; padding: 25px; border-left: 5px solid #4361ee;">
+                <p style="margin-bottom: 15px;">Паттерны проектирования в JavaScript помогают решать распространенные задачи разработки проверенными способами. Они обеспечивают:</p>
+                <ul style="padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 10px;"><span class="highlight">Читаемость кода:</span> Единый подход к решению проблем</li>
+                    <li style="margin-bottom: 10px;"><span class="highlight">Поддерживаемость:</span> Легче вносить изменения и расширять функционал</li>
+                    <li style="margin-bottom: 10px;"><span class="highlight">Переиспользуемость:</span> Проверенные решения для повторяющихся задач</li>
+                    <li><span class="highlight">Коммуникацию:</span> Общий язык для разработчиков</li>
+                </ul>
+                <p>Используя паттерны, вы пишете более структурированный, предсказуемый и масштабируемый код.</p>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>Изучайте паттерны проектирования, чтобы писать более качественный JavaScript-код</p>
+            <p style="margin-top: 10px;">Все примеры работают в современном браузере с поддержкой ES6+</p>
+        </div>
+    </footer>
+
+    <script>
+        // Модуль (Module) Pattern
+        const CounterModule = (function() {
+            let count = 0;
+            
+            const increment = () => {
+                count++;
+                return count;
+            };
+            
+            const decrement = () => {
+                count--;
+                return count;
+            };
+            
+            const getCount = () => count;
+            
+            return {
+                increment,
+                decrement,
+                getCount
+            };
+        })();
+        
+        function runModuleExample() {
+            const output = document.getElementById('module-output');
+            output.innerHTML = '';
+            
+            output.innerHTML += `<p>Текущее значение: ${CounterModule.getCount()}</p>`;
+            output.innerHTML += `<p>После increment(): ${CounterModule.increment()}</p>`;
+            output.innerHTML += `<p>После increment(): ${CounterModule.increment()}</p>`;
+            output.innerHTML += `<p>После decrement(): ${CounterModule.decrement()}</p>`;
+            output.innerHTML += `<p>Финальное значение: ${CounterModule.getCount()}</p>`;
+            
+            output.classList.add('show');
+        }
+        
+        // Singleton Pattern
+        const ConfigManager = (function() {
+            let instance = null;
+            let config = {};
+            
+            function createInstance() {
+                return {
+                    set: (key, value) => {
+                        config[key] = value;
+                        return `Настройка "${key}" установлена в "${value}"`;
+                    },
+                    get: (key) => config[key],
+                    getAll: () => ({...config})
+                };
+            }
+            
+            return {
+                getInstance: function() {
+                    if (!instance) {
+                        instance = createInstance();
+                    }
+                    return instance;
+                }
+            };
+        })();
+        
+        function runSingletonExample() {
+            const output = document.getElementById('singleton-output');
+            output.innerHTML = '';
+            
+            const config1 = ConfigManager.getInstance();
+            const config2 = ConfigManager.getInstance();
+            
+            output.innerHTML += `<p>config1 === config2: ${config1 === config2}</p>`;
+            output.innerHTML += `<p>${config1.set('theme', 'dark')}</p>`;
+            output.innerHTML += `<p>${config2.set('language', 'ru')}</p>`;
+            output.innerHTML += `<p>Все настройки: ${JSON.stringify(config1.getAll())}</p>`;
+            output.innerHTML += `<p>Тема из config2: ${config2.get('theme')}</p>`;
+            
+            output.classList.add('show');
+        }
+        
+        // Factory Pattern
+        class Admin {
+            constructor(name) {
+                this.name = name;
+                this.role = 'Администратор';
+                this.permissions = ['read', 'write', 'delete', 'manage'];
+            }
+            
+            getInfo() {
+                return `${this.name} (${this.role}) - Права: ${this.permissions.join(', ')}`;
+            }
+        }
+        
+        class Moderator {
+            constructor(name) {
+                this.name = name;
+                this.role = 'Модератор';
+                this.permissions = ['read', 'write', 'delete'];
+            }
+            
+            getInfo() {
+                return `${this.name} (${this.role}) - Права: ${this.permissions.join(', ')}`;
+            }
+        }
+        
+        class Member {
+            constructor(name) {
+                this.name = name;
+                this.role = 'Участник';
+                this.permissions = ['read', 'write'];
+            }
+            
+            getInfo() {
+                return `${this.name} (${this.role}) - Права: ${this.permissions.join(', ')}`;
+            }
+        }
+        
+        class UserFactory {
+            createUser(type, name) {
+                switch(type) {
+                    case 'admin':
+                        return new Admin(name);
+                    case 'moderator':
+                        return new Moderator(name);
+                    case 'member':
+                        return new Member(name);
+                    default:
+                        throw new Error('Неизвестный тип пользователя');
+                }
+            }
+        }
+        
+        function runFactoryExample() {
+            const output = document.getElementById('factory-output');
+            output.innerHTML = '';
+            
+            const userFactory = new UserFactory();
+            
+            const admin = userFactory.createUser('admin', 'Алексей');
+            const moderator = userFactory.createUser('moderator', 'Мария');
+            const member = userFactory.createUser('member', 'Иван');
+            
+            output.innerHTML += `<p>${admin.getInfo()}</p>`;
+            output.innerHTML += `<p>${moderator.getInfo()}</p>`;
+            output.innerHTML += `<p>${member.getInfo()}</p>`;
+            
+            output.classList.add('show');
+        }
+        
+        // Observer Pattern
+        class Observable {
+            constructor() {
+                this.observers = [];
+            }
+            
+            subscribe(observer) {
+                this.observers.push(observer);
+            }
+            
+            unsubscribe(observer) {
+                this.observers = this.observers.filter(obs => obs !== observer);
+            }
+            
+            notify(data) {
+                this.observers.forEach(observer => observer.update(data));
+            }
+        }
+        
+        class Observer {
+            constructor(name) {
+                this.name = name;
+            }
+            
+            update(data) {
+                console.log(`${this.name} получил: ${data}`);
+                return `${this.name} получил: ${data}`;
+            }
+        }
+        
+        function runObserverExample() {
+            const output = document.getElementById('observer-output');
+            output.innerHTML = '';
+            
+            const newsChannel = new Observable();
+            
+            const observer1 = new Observer('Подписчик 1');
+            const observer2 = new Observer('Подписчик 2');
+            const observer3 = new Observer('Подписчик 3');
+            
+            newsChannel.subscribe(observer1);
+            newsChannel.subscribe(observer2);
+            newsChannel.subscribe(observer3);
+            
+            output.innerHTML += '<p>Рассылка новостей:</p>';
+            newsChannel.notify('Новый урок по JavaScript доступен!');
+            
+            output.innerHTML += `<p>${observer1.update('Новый урок по JavaScript доступен!')}</p>`;
+            output.innerHTML += `<p>${observer2.update('Новый урок по JavaScript доступен!')}</p>`;
+            output.innerHTML += `<p>${observer3.update('Новый урок по JavaScript доступен!')}</p>`;
+            
+            newsChannel.unsubscribe(observer2);
+            output.innerHTML += '<p>После отписки Подписчика 2:</p>';
+            newsChannel.notify('Скоро выйдет урок по паттернам проектирования');
+            
+            output.innerHTML += `<p>${observer1.update('Скоро выйдет урок по паттернам проектирования')}</p>`;
+            output.innerHTML += `<p>Подписчик 2 больше не получит уведомление</p>`;
+            output.innerHTML += `<p>${observer3.update('Скоро выйдет урок по паттернам проектирования')}</p>`;
+            
+            output.classList.add('show');
+        }
+        
+        // Strategy Pattern
+        class CreditCardPayment {
+            pay(amount) {
+                return `Оплачено ${amount}₽ с помощью кредитной карты`;
+            }
+        }
+        
+        class PayPalPayment {
+            pay(amount) {
+                return `Оплачено ${amount}₽ через PayPal`;
+            }
+        }
+        
+        class CryptoPayment {
+            pay(amount) {
+                return `Оплачено ${amount}₽ криптовалютой`;
+            }
+        }
+        
+        class PaymentContext {
+            constructor(strategy) {
+                this.strategy = strategy;
+            }
+            
+            setStrategy(strategy) {
+                this.strategy = strategy;
+            }
+            
+            executePayment(amount) {
+                return this.strategy.pay(amount);
+            }
+        }
+        
+        function runStrategyExample() {
+            const output = document.getElementById('strategy-output');
+            output.innerHTML = '';
+            
+            const payment = new PaymentContext(new CreditCardPayment());
+            
+            output.innerHTML += `<p>${payment.executePayment(5000)}</p>`;
+            
+            payment.setStrategy(new PayPalPayment());
+            output.innerHTML += `<p>${payment.executePayment(2500)}</p>`;
+            
+            payment.setStrategy(new CryptoPayment());
+            output.innerHTML += `<p>${payment.executePayment(7500)}</p>`;
+            
+            output.classList.add('show');
+        }
+        
+        // Функция для показа/скрытия кода
+        function toggleCode(patternId) {
+            const card = document.getElementById(patternId);
+            const codeElement = card.querySelector('.pattern-code');
+            
+            if (codeElement.style.display === 'none') {
+                codeElement.style.display = 'block';
+            } else {
+                codeElement.style.display = 'none';
+            }
+        }
+        
+        // Инициализация - скрыть все блоки с выводом при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            const outputs = document.querySelectorAll('.example-output');
+            outputs.forEach(output => {
+                output.style.display = 'none';
+            });
+            
+            // Показать сообщение при загрузке
+            console.log('Добро пожаловать на сайт с паттернами JavaScript!');
+            console.log('Нажмите на кнопки "Запустить пример" чтобы увидеть паттерны в действии.');
+        });
+    </script>
+</body>
+</html>
